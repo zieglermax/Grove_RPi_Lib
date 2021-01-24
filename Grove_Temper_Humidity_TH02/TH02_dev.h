@@ -46,15 +46,14 @@
 /****************************************************************************/
 class TH02_dev : protected I2C_Com {
 
-
     private:
-        static const uint8_t TH2_I2C_DEV_ADR = 0x40;
+        static constexpr uint8_t TH2_I2C_DEV_ADR = 0x40;
 
-        static const uint8_t REG_DATA_H = 0x01;
-        static const uint8_t REG_DATA_L = 0x02;
-        static const uint8_t CMD_MEASURE_HUMI = 0x01;
-        static const uint8_t CMD_MEASURE_TEMP = 0x11;
-        static const uint8_t REG_CONFIG = 0x03;
+        static constexpr uint8_t REG_DATA_H = 0x01;
+        static constexpr uint8_t REG_DATA_L = 0x02;
+        static constexpr uint8_t REG_CONFIG = 0x03;
+        static constexpr uint8_t CMD_MEASURE_HUMI = 0x01;
+        static constexpr uint8_t CMD_MEASURE_TEMP = 0x11;
 
     public:
         TH02_dev(unsigned int device = 1) : I2C_Com(device,TH2_I2C_DEV_ADR){};

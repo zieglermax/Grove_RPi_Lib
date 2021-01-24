@@ -105,32 +105,41 @@ uint8_t I2C_Com::isAvailable() {
     }
 }
 
-void I2C_Com::I2C_WriteCmd(const uint8_t& Cmd) {
+void I2C_Com::I2C_WriteCmd(const uint8_t Cmd) {
     i2c_smbus_write_byte(I2C_Device, Cmd);
 }
 
-uint8_t I2C_Com::I2C_ReadReg(const uint8_t& Reg) {
+uint8_t I2C_Com::I2C_ReadReg(const uint8_t Reg) {
     uint8_t TempReg = 0;
     TempReg = (uint8_t) i2c_smbus_read_byte_data(I2C_Device, Reg);
     return TempReg;
 }
 
-void I2C_Com::I2C_WriteReg(const uint8_t& Reg, const uint8_t& Data) {
+void I2C_Com::I2C_WriteReg(const uint8_t Reg, const uint8_t Data) {
    i2c_smbus_write_byte_data( I2C_Device, Reg, Data);
 }
 
-uint8_t I2C_Com::I2C_ReadData(const uint8_t& reg) {
+uint8_t I2C_Com::I2C_ReadData(const uint8_t reg) {
     uint8_t Temp = i2c_smbus_read_byte_data( I2C_Device, reg );
     return Temp;
 }
 
-uint16_t I2C_Com::I2C_ReadData2byte(const uint8_t& regL, const uint8_t& regH ) {
+uint16_t I2C_Com::I2C_ReadData2byte(const uint8_t regL, const uint8_t regH ) {
     uint16_t TempData = 0;
     uint8_t datah=0, datal=0;
 
     datah = i2c_smbus_read_byte_data( I2C_Device, regH );
     datal = i2c_smbus_read_byte_data( I2C_Device, regL );
     TempData = (datah << 8) | datal;
+
+    //std::cout << "RawTemp Value: " << TempData << std::endl;
+    return TempData;
+}
+
+uint16_t I2C_Com::I2C_ReadData2byte(const uint8_t reg) {
+    uint16_t TempData = 0;
+
+    TempData = i2c_smbus_read_word_data( I2C_Device, reg );
 
     //std::cout << "RawTemp Value: " << TempData << std::endl;
     return TempData;

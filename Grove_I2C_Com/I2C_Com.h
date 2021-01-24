@@ -51,19 +51,20 @@ class I2C_Com {
         uint8_t isAvailable();
 
     protected:
-        void        I2C_WriteCmd(const uint8_t& Cmd);
-        uint8_t     I2C_ReadReg(const uint8_t& Reg);
-        void        I2C_WriteReg(const uint8_t& Reg, const uint8_t &Data);
-        uint8_t     I2C_ReadData(const uint8_t& reg);
-        uint16_t    I2C_ReadData2byte(const uint8_t& regL, const uint8_t& regH);
+        void        I2C_WriteCmd(const uint8_t Cmd);
+        uint8_t     I2C_ReadReg(const uint8_t Reg);
+        void        I2C_WriteReg(const uint8_t Reg, const uint8_t Data);
+        uint8_t     I2C_ReadData(const uint8_t reg);
+        uint16_t    I2C_ReadData2byte(const uint8_t regL, const uint8_t regH);
+        uint16_t    I2C_ReadData2byte(const uint8_t reg);
 
 
 
     private:
         int I2C_Device;
         uint8_t I2C_DEV_ADR;
-        static const uint8_t I2C_REG_STATUS        = 0x00;
-        static const uint8_t I2C_STATUS_RDY_MASK   = 0x01;
+        static constexpr uint8_t I2C_REG_STATUS        = 0x00;
+        static constexpr uint8_t I2C_STATUS_RDY_MASK   = 0x01;
 
 #ifdef CROSS_COMPILE
         int open(const char* dev, int mode) {return 0;};
@@ -72,8 +73,9 @@ class I2C_Com {
         int i2c_smbus_write_byte( int dev, uint8_t byte) { return 0;};
         int i2c_smbus_read_byte_data( int dev, uint8_t reg) { return 1234;};
         int i2c_smbus_write_byte_data( int dev, uint8_t Reg, uint8_t Data) {return 0;};
+        int i2c_smbus_read_word_data( int dev, uint8_t Reg){return 0;};
 
-        static const uint8_t I2C_SLAVE = 0x00;
+        static constexpr uint8_t I2C_SLAVE = 0x00;
 #endif // CROSS_COMPILE
 };
 
