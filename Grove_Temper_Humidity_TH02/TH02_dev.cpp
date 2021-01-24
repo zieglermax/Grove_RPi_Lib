@@ -35,70 +35,25 @@
 #include "TH02_dev.h"
 #include <unistd.h>
 #include <stdlib.h>
-extern "C" {
-#include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
-}
-#include <sys/ioctl.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <string>
 #include <cstdint>
 #include <iostream>
-
-/* Use Serial IIC */
-#ifdef SERIAL_IIC
-#endif
-
-/****************************************************************************/
-/***       Local Variable                                                 ***/
-/****************************************************************************/
 
 
 /****************************************************************************/
 /***       Class member Functions                                         ***/
 /****************************************************************************/
 
-TH02_dev::TH02_dev() {
-    /* Init IIC Interface */
-	std::cout << "Initalizing I²C Interface" << std::endl;
-    /* open i2c_device */
-    //if ((TH02_dev::i2c_device = open(strcat("/dev/i2c-", (char) (48+iic_i2c_device)), O_RDWR)) < 0)
-    if ((TH02_dev::i2c_device = open("/dev/i2c-1", O_RDWR)) < 0)
-    {
-        perror("open() failed");
-    }
-    printf(" OK\n");
-
-    /* Specify Address of slave i2c_device */
-    if (ioctl(TH02_dev::i2c_device, I2C_SLAVE, TH02_I2C_DEV_ID) < 0)
-    {
-        printf("Failed to acquire bus access and/or talk to slave\n");
-    }
-
-    /* TH02 don't need to software reset */
-}
-
-TH02_dev::~TH02_dev() {
-    /* Init IIC Interface */
-	std::cout << "Deinitalizing I²C Interface" << std::endl;
-    /* open i2c_device */
-    if (0 < close(TH02_dev::i2c_device) )
-    {
-        perror("close() failed");
-    }
-    std::cout << "I²C i2c_device Deinitialized succesfully." << std::endl;
-
-}
-
 float TH02_dev::ReadTemperature(void) {
     /* Start a new temperature conversion */
-    TH02_dev::TH02_IIC_WriteReg(REG_CONFIG, CMD_MEASURE_TEMP);
+    I2C_WriteReg(REG_CONFIG, CMD_MEASURE_TEMP);
     //delay(100);
     /* Wait until conversion is done */
-    while (!TH02_dev::isAvailable());
-    uint16_t value = TH02_dev::TH02_IIC_ReadData();
+    while (!isAvailable());
+    uint16_t value = I2C_ReadData2byte(REG_DATA_L, REG_DATA_H);
 
     value = value >> 2;
     /*
@@ -113,12 +68,12 @@ float TH02_dev::ReadTemperature(void) {
 
 float TH02_dev::ReadHumidity(void) {
     /* Start a new humility conversion */
-    TH02_dev::TH02_IIC_WriteReg(REG_CONFIG, CMD_MEASURE_HUMI);
+    I2C_WriteReg(REG_CONFIG, CMD_MEASURE_HUMI);
 
     /* Wait until conversion is done */
     //delay(100);
-    while (!TH02_dev::isAvailable());
-    uint16_t value = TH02_dev::TH02_IIC_ReadData();
+    while (!isAvailable());
+    uint16_t value = I2C_ReadData2byte(REG_DATA_L, REG_DATA_H);
 
     value = value >> 4;
 
@@ -130,49 +85,4 @@ float TH02_dev::ReadHumidity(void) {
     float humility = (value / 16.0) - 24.0;
 
     return humility;
-}
-
-/****************************************************************************/
-/***       Local Functions                                                ***/
-/****************************************************************************/
-uint8_t TH02_dev::isAvailable() {
-    uint8_t status =  TH02_dev::TH02_IIC_ReadReg(REG_STATUS);
-    if (status & STATUS_RDY_MASK) {
-        return 0;    //ready
-    } else {
-        return 1;    //not ready yet
-    }
-}
-
-void TH02_dev::TH02_IIC_WriteCmd(uint8_t u8Cmd) {
-    i2c_smbus_write_byte(TH02_dev::i2c_device, u8Cmd);
-}
-
-uint8_t TH02_dev::TH02_IIC_ReadReg(uint8_t u8Reg) {
-    uint8_t TempReg = 0;
-    TempReg = (uint8_t) i2c_smbus_read_byte_data(TH02_dev::i2c_device, u8Reg);
-    return TempReg;
-}
-
-void TH02_dev::TH02_IIC_WriteReg(uint8_t u8Reg, uint8_t u8Data) {
-   i2c_smbus_write_byte_data( TH02_dev::i2c_device, u8Reg, u8Data);
-   //i2c_smbus_write_byte( TH02_dev::i2c_device, u8Reg);
-   //i2c_smbus_write_byte( TH02_dev::i2c_device, u8Data
-}
-
-uint16_t TH02_dev::TH02_IIC_ReadData(void) {
-    uint16_t Temp = TH02_IIC_ReadData2byte();
-    return Temp;
-}
-
-uint16_t TH02_dev::TH02_IIC_ReadData2byte() {
-    uint16_t TempData = 0;
-    uint8_t datah=0, datal=0;
-
-    datah = i2c_smbus_read_byte_data( TH02_dev::i2c_device, REG_DATA_H );
-    datal = i2c_smbus_read_byte_data( TH02_dev::i2c_device, REG_DATA_L );
-    TempData = (datah << 8) | datal;
-
-    //std::cout << "RawTemp Value: " << TempData << std::endl;
-    return TempData;
 }
