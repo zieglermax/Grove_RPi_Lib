@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="Grove_Temper_Humidity_TH02/Grove_Temper_Humidity_TH02.cbp">
+			<Depends filename="Grove_I2C_Com/Grove_I2C_Com.cbp" />
+		</Project>
+		<Project filename="Grove_I2C_Com/Grove_I2C_Com.cbp" />
+		<Project filename="Grove_BaseHat/Grove_BaseHat.cbp">
+			<Depends filename="Grove_I2C_Com/Grove_I2C_Com.cbp" />
+		</Project>
+		<Project filename="Grove_Temper_Humidity_DHT11/Grove_Temper_Humidity_DHT11.cbp">
+			<Depends filename="Grove_BaseHat/Grove_BaseHat.cbp" />
+		</Project>
+	</Workspace>
+</CodeBlocks_workspace_file>
